@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { Todo } from './Todo';
+import { Store } from '@ngrx/store';
+import { StoreInterface } from './store/store';
 
 @Component({
   selector: 'app-root',
@@ -10,13 +12,14 @@ export class AppComponent {
   todos: Todo[] = [];
   newTodo: string;
 
+  constructor(private store:Store<StoreInterface>){
+      this.store.subscribe(data => this.newTodo = data.list.name)
+  }
+
   saveTodo(){
     if(this.newTodo){
-      let todo = new Todo();
-      todo.name = this.newTodo;
-      todo.isCompleted = true
-      this.todos.push(todo);
-      this.newTodo ="";
+      this.store.dispatch({type: 'add', name:this.newTodo})
+      this.newTodo =""
     }
     else{
       alert("Please enter todo")
@@ -29,6 +32,7 @@ export class AppComponent {
   }
 
   remove(id:number){
+    this.store.dispatch({type: 'delete' } )
     this.todos = this.todos.filter((v,i) => i !== id)
   }
 
